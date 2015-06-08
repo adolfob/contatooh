@@ -8,18 +8,7 @@ module.exports = function(){
 
 	var Usuario = mongoose.model('Usuario');
 
-	passport.serializeUser(function(usuario, done){
-		console.log("Serializer user");
-		done(null, usuario._id);
-	});
-
-	passport.deserializeUser(function(id, nome){
-		console.log("Deserializer user");
-		Usuario.findById(id).exec()
-			.then(function(usuario) {
-				done(null, usuario);
-			});
-	});
+	// Implementação das estratégias
 
 	passport.use(new FacebookStrategy({
 		clientID: config.facebook.clientID,
@@ -44,14 +33,28 @@ module.exports = function(){
 		clientSecret: config.github.clientSecret,
 		callbackURL: config.github.callbackURL
 	}, function(accessToken, refreshToken, profile, done){
-		console.log(profile);
-		console.log(accessToken);
 		Usuario.findOrCreate(
 			{"login": profile.username},
 			{"nome": profile.username},
 			function(erro, usuario){
+				console.log(usuario);
 				return done(erro, usuario);
 			})
 	}));
+
+	// Serializer e Deserializer
+
+	passport.serializeUser(function(usuario, done) {
+	  done(null, usuario._id);
+	});
+
+	passport.deserializeUser(function(id, done) {
+	  Usuario.findById(id).exec()
+	  .then(function(usuario) {
+	  	done(null, usuario);	
+	  });
+	});
+
+
 
 };

@@ -8,8 +8,13 @@ module.exports = function(app){
 	}));
 
 
-	app.use('/auth/facebook', passport.authenticate('facebook'));
-	app.use('/auth/facebook/callback', passport.authenticate('facebook', {
+	app.get('/auth/facebook', passport.authenticate('facebook'));
+	app.get('/auth/facebook/callback', passport.authenticate('facebook', {
 		successRedirect: '/'
 	}));
+
+	app.get('/logout', function(req, res){
+		req.logOut();
+		res.redirect('/');
+	});
 }
